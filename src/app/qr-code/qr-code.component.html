@@ -1,11 +1,104 @@
 <section>
   <div class="container">
-    <div class="row">
+    <div class="row mt-2">
       <div class="col-md-9">
-        <input type="text" [(ngModel)]="stringData" (ngModelChange)="createQRCode()">
+        <div class="card p-3">
+          <form class="form-signin" [formGroup]="qrData" (ngSubmit)="createQRCode()">
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-2">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input type="text" class="form-control" formControlName="firstName" id="firstName" placeholder="First Name">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-2">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" formControlName="lastName" id="lastName" placeholder="Last Name">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="contactNumber" class="form-label">Contact Number</label>
+                <input type="number" class="form-control" min="0" formControlName="contactNumber" id="contactNumber" placeholder="Contact">
+              </div>
+              <div class="col-6">
+                <div class="mb-2">
+                  <label for="phoneNumber" class="form-label">Phone Number</label>
+                  <input type="number" class="form-control" min="0" formControlName="phoneNumber" id="phoneNumber" placeholder="Phone">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-2">
+                  <label for="faxNumber" class="form-label">Fax Number</label>
+                <input type="number" class="form-control" min="0" formControlName="faxNumber" id="faxNumber" placeholder="Fax">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="emailId" class="form-label">Email ID</label>
+                <input type="text" class="form-control" formControlName="emailId" id="emailId" placeholder="abc@mail.com">
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="companyName" class="form-label">Company Name</label>
+                <input type="text" class="form-control" formControlName="companyName" id="companyName" placeholder="Company">
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="street" class="form-label">Street</label>
+                <input type="text" class="form-control" formControlName="street" id="street" placeholder="">
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" formControlName="city" id="city" placeholder="">
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="state" class="form-label">State Name</label>
+                <input type="text" class="form-control" formControlName="state" id="state" placeholder="">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-2">
+                  <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" formControlName="country" id="country" placeholder="Country">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-2">
+                  <label for="pinCode" class="form-label">Pin Code</label>
+                <input type="number" class="form-control" min="0" formControlName="pinCode" id="pinCode" placeholder="ZIP">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-2">
+                <label for="webSite" class="form-label">Web Site</label>
+                <input type="text" class="form-control" formControlName="webSite" id="webSite" placeholder="www.website.com">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success">Generate</button>
+          </form>
+        </div>
       </div>
       <div class="col-md-3">
-        <qrcode [qrdata]="stringData" [width]="250" [errorCorrectionLevel]="'M'"></qrcode>
+        <qrcode [qrdata]="stringData" [width]="qrCodeSize" [errorCorrectionLevel]="'M'"></qrcode>
+        <hr>
+        <div class="row">
+          <div class="mb-2">
+            <label for="qrCodeSize" class="form-label">Image size:</label> &nbsp;&nbsp;&nbsp;
+            <input type="range" id="qrCodeSize" min="200" max="500" step="10" (input)="qrSize($event.target)" [value]="qrCodeSize">
+          </div>
+        </div>
       </div>
     </div>
   </div>
