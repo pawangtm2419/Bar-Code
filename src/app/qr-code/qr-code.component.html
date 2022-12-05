@@ -1,0 +1,12 @@
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9">
+        <input type="text" [(ngModel)]="stringData" (ngModelChange)="createQRCode()">
+      </div>
+      <div class="col-md-3">
+        <qrcode [qrdata]="stringData" [width]="250" [errorCorrectionLevel]="'M'"></qrcode>
+      </div>
+    </div>
+  </div>
+</section>

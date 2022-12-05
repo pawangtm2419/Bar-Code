@@ -1,23 +1,19 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BarcodeComponent } from './barcode/barcode.component';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { NgxQRCodeModule } from 'ngx-qrcode2';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    BarcodeComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
-    NgxQRCodeModule,
+    RouterModule,
     AppRoutingModule
   ],
-  providers: [BarcodeScanner],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
