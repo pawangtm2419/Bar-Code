@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'qr-generator', pathMatch: 'full' },
-  { path: 'qr-generator', loadChildren: () => import('./qr-code/qr-code.module').then(m => m.QrCodeModule)},
+  { path: '', redirectTo: 'contact-master', pathMatch: 'full' },
+  { path: 'contact-master', loadChildren: () => import('./contact-master/contact-master.module').then(m => m.ContactMasterModule)},
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 

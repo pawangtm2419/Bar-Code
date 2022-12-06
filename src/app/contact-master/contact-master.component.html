@@ -1,0 +1,213 @@
+<section>
+  <div class="container-fluid mt-2">
+      <div class="row">
+          <div class="col-md-12">
+              <ul class="model-menu">
+                  <li (click)="refresh()"><button class="btn badge bg-primary" title="Refresh"><i class="fas fa-sync-alt"></i></button></li> |
+                  <li><a>Contact Master</a></li>
+              </ul>
+          </div>
+          <div class="col-md-12 card mt-2">
+              <div class="sidebarMain-1">
+                  <div class="row">
+                      <div class="col-md-5">
+                          <div class="searchBar d-flex justify-content-center align-items-center">
+                              <i class="fas fa-search"></i><input class="form-control" type="search" [(ngModel)]="searchData" placeholder="Search" aria-label="Search">
+                          </div>
+                      </div>
+                      <div class="col-md-2 d-flex justify-content-center align-items-center"></div>
+                      <div class="col-md-5 align-self-end text-end">
+                          <div class="modelBtnMain">
+                            <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
+                            <button type="button" class="btn btn-primary" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-download"></i></button>
+                          </div>
+                          <label for="limit">
+                              <select id="limit" name="limit" class="form-select" (click)="dataLimit()">
+                                  <option *ngFor="let limit of limits" value="{{limit.value}}">{{limit.key}}</option>
+                              </select>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle" id="export">
+                  <thead class="text-white sticky-top theadbg">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">QR Code</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">email</th>
+                      <th scope="col">phone1</th>
+                      <th scope="col">response</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let fm of listData | filter: searchData | paginate: { itemsPerPage: limit, currentPage: pageData }; let i=index">
+                      <td data-title="Sr. No.">{{limit*(pageData-1)+i+1}}</td>
+                      <td data-title="Options" class="text-center">
+                          <a class="table-btn btn btn-secondary" (click)="viewQRCode(fm.contact_id)" data-bs-toggle="modal" data-bs-target="#view"><i class="fa-solid fa-qrcode"></i></a>
+                      </td>
+                      <td>{{fm.firstname}}</td>
+                      <td>{{fm.lastname}}</td>
+                      <td>{{fm.contactnumber}}</td>
+                      <td>{{fm.email}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="input-group-icon input-group-icon-right text-center mt-2">
+                  <pagination-controls (pageChange)="pageData = $event"></pagination-controls>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<div class="modal fade" id="view" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header modalHeaderCenter" style="background: #454397">
+              <h2 class="modal-title text-white text-center">Detail</h2>
+              <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
+          </div>
+          <div class="modal-body">
+              <div class="row">
+                  <div class="col-md-1"></div>
+                  <div class="col-md-10">
+                    <div class="row">
+                      <div class="mb-1">
+                        <label for="qrCodeSize" class="form-label">Image size:</label> &nbsp;&nbsp;&nbsp;
+                        <input type="range" id="qrCodeSize" min="200" max="500" step="10" (input)="qrSize($event.target)" [value]="qrCodeSize">
+                      </div>
+                    </div><hr>
+                    <div class="d-flex justify-content-center">
+                      <qrcode [qrdata]="stringData" [width]="qrCodeSize" [errorCorrectionLevel]="'M'"></qrcode>
+                    </div>
+                  </div>
+                  <div class="col-md-1"></div>
+              </div>
+          </div>
+          <div class="modal-footer border-btm">
+            <button type="button" class="btn btn-primary" [routerLink]="['/contact-master', id]"  data-bs-dismiss="modal">View detail</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="createContact" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="form-signin" [formGroup]="qrData" (ngSubmit)="createQRCode()">
+      <div class="modal-content">
+        <div class="modal-header modalHeaderCenter" style="background: #454397">
+          <h2 class="modal-title text-white text-center">Create new contact</h2>
+          <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+              <div class="row">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="firstName" class="form-label">First Name</label>
+                      <input type="text" class="form-control" formControlName="firstName" id="firstName" placeholder="First Name">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="lastName" class="form-label">Last Name</label>
+                      <input type="text" class="form-control" formControlName="lastName" id="lastName" placeholder="Last Name">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-1">
+                    <label for="contactNumber" class="form-label">Contact Number</label>
+                    <input type="number" class="form-control" min="0" formControlName="contactNumber" id="contactNumber" placeholder="Contact">
+                  </div>
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="phoneNumber" class="form-label">Phone Number</label>
+                      <input type="number" class="form-control" min="0" formControlName="phoneNumber" id="phoneNumber" placeholder="Phone">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="faxNumber" class="form-label">Fax Number</label>
+                    <input type="number" class="form-control" min="0" formControlName="faxNumber" id="faxNumber" placeholder="Fax">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-1">
+                    <label for="email" class="form-label">Email ID</label>
+                    <input type="email" class="form-control" formControlName="email" id="email" placeholder="abc@mail.com">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="companyName" class="form-label">Company Name</label>
+                    <input type="text" class="form-control" formControlName="companyName" id="companyName" placeholder="Company">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="jobProfile" class="form-label">Job Profile</label>
+                    <input type="text" class="form-control" formControlName="jobProfile" id="jobProfile" placeholder="Your Job">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-1">
+                    <label for="street" class="form-label">Street</label>
+                    <input type="text" class="form-control" formControlName="street" id="street" placeholder="">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-1">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" formControlName="city" id="city" placeholder="">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-1">
+                    <label for="state" class="form-label">State Name</label>
+                    <input type="text" class="form-control" formControlName="state" id="state" placeholder="">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="country" class="form-label">Country</label>
+                    <input type="text" class="form-control" formControlName="country" id="country" placeholder="Country">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="mb-1">
+                      <label for="pinCode" class="form-label">Pin Code</label>
+                    <input type="number" class="form-control" min="0" formControlName="pinCode" id="pinCode" placeholder="ZIP">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-1">
+                    <label for="webSite" class="form-label">Web Site</label>
+                    <input type="text" class="form-control" formControlName="webSite" id="webSite" placeholder="www.website.com">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1"></div>
+          </div>
+        </div>
+        <div class="modal-footer border-btm">
+          <button type="submit" class="btn btn-success">Generate</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,6 +1,8 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
@@ -13,7 +15,17 @@ import { SharedModule } from './shared/shared.module';
     BrowserModule,
     SharedModule,
     RouterModule,
-    AppRoutingModule
+    HttpClientModule,
+    AppRoutingModule,
+    ToastrModule.forRoot({
+      timeOut: 2500,
+      positionClass: 'toast-top-right',
+      preventDuplicates: false,
+      newestOnTop: true,
+      tapToDismiss: true,
+      progressBar: true,
+      progressAnimation: 'increasing'
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
