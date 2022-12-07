@@ -82,7 +82,7 @@ export class ContactMasterComponent implements OnInit {
   }
 
   viewQRCode(data: number): void {
-    this.stringData = `http://172.16.15.21/contact-master/${data}`;
+    this.stringData = `http://172.16.15.21:7427/contact-master/${data}`;
     this.id = data;
   }
 
