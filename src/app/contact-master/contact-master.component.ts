@@ -4,6 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '../app.service';
 import { ToasterService } from '../toster.service';
 import * as XLSX from 'xlsx';
+import * as QRCode from 'qrcode';
+const vCardsJS = require('vcards-js');
+const download = require('downloadjs');
 
 @Component({
   selector: 'app-contact-master',
@@ -21,40 +24,103 @@ export class ContactMasterComponent implements OnInit {
   limit: any = 50;
   isExcelDownload: boolean = false;
   id: any;
+  vCard: any = vCardsJS();
+  qr: any;
+  closeResult: any;
 
-  constructor( private common: AppService, private toster: ToasterService) { }
+  constructor( private common: AppService, private toster: ToasterService) {
+    this.vCard.workAddress.label = 'Firmenanschrift';
+    this.vCard.version = '3.0';
+  }
 
   ngOnInit(): void {
     this.getDataList();
-    this.qrData = new FormGroup({
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
-      faxNumber: new FormControl(''),
-      phoneNumber: new FormControl(''),
-      contactNumber: new FormControl(''),
-      email: new FormControl(''),
-      companyName: new FormControl(''),
-      jobProfile: new FormControl(''),
-      street: new FormControl(''),
-      city: new FormControl(''),
-      state: new FormControl(''),
-      country: new FormControl(''),
-      pinCode: new FormControl(''),
-      webSite: new FormControl('')
-    });
+  }
+
+  generateQr(data: any) {
+    console.log(this.vCard);
+    this.id = data.contact_id;
+    this.vCard.cellPhone = data.phonenumber;
+    this.vCard.firstName = data.firstname;
+    this.vCard.lastName = data.lastname;
+    this.vCard.workPhone = data.phonenumber;
+    this.vCard.organization = data.companyname;
+    this.vCard.title = data.jobprofile;
+    this.vCard.url = data.website;
+    this.vCard.workAddress.street = data.street;
+    this.vCard.workAddress.city = data.city;
+    this.vCard.workAddress.stateProvince = data.state;
+    this.vCard.workAddress.postalCode = data.pincode;
+    this.vCard.workAddress.countryRegion = data.country;
+    this.vCard.workEmail = data.email;
+    this.vCard.workFax = data.faxnumber;
+    this.vCard.workPhone = data.contactnumber;
+    QRCode.toCanvas(
+      document.getElementById('qrCanvas'),
+      this.vCard.getFormattedString(),
+      function (error: any) {
+        if (error) console.error(error);
+      }
+    );
+  }
+
+  downloadQRCode(type: any) {
+    if (!this.vCard) {
+      return;
+    }
+    if (type === 'SVG') {
+      QRCode.toString(this.vCard.getFormattedString(), { type: 'svg' }, (error: any, string: any) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        download(string, 'vcard-qr.svg', 'image/svg+xm');
+      });
+    } else if (type === 'PNG') {
+      QRCode.toDataURL(this.vCard.getFormattedString(), (error: any, string: any) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        download(string, 'vcard-qr.png', 'image/png');
+      });
+    } else if (type === 'vcf') {
+      download(this.vCard.getFormattedString(), 'vcard.vcf', 'text/vcard');
+    }
+  }
+
+  newContact(): void {
+    console.log(this.vCard);
   }
 
   createQRCode() {
-    let contdata = this.qrData.value;
-    let keys = Object.keys(contdata);
+    console.log(this.vCard);
+    var contData: any = {
+      phonenumber :  (this.vCard.cellPhone) ? this.vCard.cellPhone : '',
+      firstname :  (this.vCard.firstName) ? this.vCard.firstName : '',
+      lastname :  (this.vCard.lastName) ? this.vCard.lastName : '',
+      companyname :  (this.vCard.organization) ? this.vCard.organization : '',
+      jobprofile :  (this.vCard.title) ? this.vCard.title : '',
+      street: (this.vCard.workAddress.street) ? this.vCard.workAddress.street : '',
+      city: (this.vCard.workAddress.city) ? this.vCard.workAddress.city : '',
+      state: (this.vCard.workAddress.stateProvince) ? this.vCard.workAddress.stateProvince : '',
+      country: (this.vCard.workAddress.countryRegion) ? this.vCard.workAddress.countryRegion : '',
+      pincode: (this.vCard.workAddress.postalCode) ? this.vCard.workAddress.postalCode : '',
+      website: (this.vCard.url) ? this.vCard.url : '',
+      email :  (this.vCard.workEmail) ? this.vCard.workEmail : '',
+      faxnumber :  (this.vCard.workFax) ? this.vCard.workFax : '',
+      contactnumber :  (this.vCard.workPhone) ? this.vCard.workPhone : ''
+    }
+    let keys = Object.keys(contData);
     let match: any = {};
     keys.forEach((item: any) => {
-      if(contdata[item]) {
-        match[item] = contdata[item];
+      if(contData[item]) {
+        match[item] = contData[item];
       }
     });
-    this.common.createContact(match).subscribe((res: any) => {
+     this.common.createContact(contData).subscribe((res: any) => {
       if(res.status) {
+        this.ngOnInit();
         this.toster.success(res.message, "Success");
       } else {
         this.toster.error(res.message, "Error");
@@ -79,11 +145,6 @@ export class ContactMasterComponent implements OnInit {
     (error: any) => {
       this.toster.error(`Technical issue ${error}`, "Error");
     };
-  }
-
-  viewQRCode(data: number): void {
-    this.stringData = `http://172.16.15.21:7427/contact-master/${data}`;
-    this.id = data;
   }
 
   qrSize(data: any) {

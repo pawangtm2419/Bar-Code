@@ -18,7 +18,7 @@
                       <div class="col-md-2 d-flex justify-content-center align-items-center"></div>
                       <div class="col-md-5 align-self-end text-end">
                           <div class="modelBtnMain">
-                            <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
+                            <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
                             <button type="button" class="btn btn-primary" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-download"></i></button>
                           </div>
                           <label for="limit">
@@ -45,7 +45,7 @@
                     <tr *ngFor="let fm of listData | filter: searchData | paginate: { itemsPerPage: limit, currentPage: pageData }; let i=index">
                       <td data-title="Sr. No.">{{limit*(pageData-1)+i+1}}</td>
                       <td data-title="Options" class="text-center">
-                          <a class="table-btn btn btn-secondary" (click)="viewQRCode(fm.contact_id)" data-bs-toggle="modal" data-bs-target="#view"><i class="fa-solid fa-qrcode"></i></a>
+                          <a class="table-btn btn btn-secondary" (click)="generateQr(fm)" data-bs-toggle="modal" data-bs-target="#view"><i class="fa-solid fa-qrcode"></i></a>
                       </td>
                       <td>{{fm.firstname}}</td>
                       <td>{{fm.lastname}}</td>
@@ -75,13 +75,22 @@
                   <div class="col-md-1"></div>
                   <div class="col-md-10">
                     <div class="row">
-                      <div class="mb-1">
+                      <div class="col-md-3 pt-3">
                         <label for="qrCodeSize" class="form-label">Image size:</label> &nbsp;&nbsp;&nbsp;
                         <input type="range" id="qrCodeSize" min="200" max="500" step="10" (input)="qrSize($event.target)" [value]="qrCodeSize">
                       </div>
+                      <div class="col-md-3 p-2">
+                        <button type="button" class="btn btn-primary" (click)="downloadQRCode('SVG')">Download (SVG)</button>
+                      </div>
+                      <div class="col-md-3 p-2">
+                        <button type="button" class="btn btn-primary" (click)="downloadQRCode('PNG')">Download (PNG)</button>
+                      </div>
+                      <div class="col-md-3 p-2">
+                        <button type="button" class="btn btn-primary" (click)="downloadQRCode('vcf')">Download (VCF)</button>
+                      </div>
                     </div><hr>
                     <div class="d-flex justify-content-center">
-                      <qrcode [qrdata]="stringData" [width]="qrCodeSize" [errorCorrectionLevel]="'M'"></qrcode>
+                      <canvas id="qrCanvas"></canvas>
                     </div>
                   </div>
                   <div class="col-md-1"></div>
@@ -97,7 +106,6 @@
 
 <div class="modal fade" id="createContact" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <form class="form-signin" [formGroup]="qrData" (ngSubmit)="createQRCode()">
       <div class="modal-content">
         <div class="modal-header modalHeaderCenter" style="background: #454397">
           <h2 class="modal-title text-white text-center">Create new contact</h2>
@@ -112,90 +120,90 @@
                   <div class="col-6">
                     <div class="mb-1">
                       <label for="firstName" class="form-label">First Name</label>
-                      <input type="text" class="form-control" formControlName="firstName" id="firstName" placeholder="First Name">
+                      <input type="text" class="form-control" [(ngModel)]="vCard.firstName" name="firstName" id="firstName" placeholder="First Name">
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="mb-1">
                       <label for="lastName" class="form-label">Last Name</label>
-                      <input type="text" class="form-control" formControlName="lastName" id="lastName" placeholder="Last Name">
+                      <input type="text" class="form-control" [(ngModel)]="vCard.lastName" name="lastName" id="lastName" placeholder="Last Name">
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="mb-1">
-                    <label for="contactNumber" class="form-label">Contact Number</label>
-                    <input type="number" class="form-control" min="0" formControlName="contactNumber" id="contactNumber" placeholder="Contact">
+                    <label for="workPhone" class="form-label">Contact Number</label>
+                    <input type="number" class="form-control" min="0" [(ngModel)]="vCard.workPhone" name="workPhone" id="workPhone" placeholder="Contact">
                   </div>
                   <div class="col-6">
                     <div class="mb-1">
-                      <label for="phoneNumber" class="form-label">Phone Number</label>
-                      <input type="number" class="form-control" min="0" formControlName="phoneNumber" id="phoneNumber" placeholder="Phone">
+                      <label for="cellPhone" class="form-label">Phone Number</label>
+                      <input type="number" class="form-control" min="0" [(ngModel)]="vCard.cellPhone" name="cellPhone" id="cellPhone" placeholder="Phone">
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="mb-1">
-                      <label for="faxNumber" class="form-label">Fax Number</label>
-                    <input type="number" class="form-control" min="0" formControlName="faxNumber" id="faxNumber" placeholder="Fax">
+                      <label for="workFax" class="form-label">Fax Number</label>
+                    <input type="number" class="form-control" min="0" [(ngModel)]="vCard.workFax" name="workFax" id="workFax" placeholder="Fax">
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="mb-1">
                     <label for="email" class="form-label">Email ID</label>
-                    <input type="email" class="form-control" formControlName="email" id="email" placeholder="abc@mail.com">
+                    <input type="email" class="form-control" [(ngModel)]="vCard.workEmail" name="email" id="email" placeholder="abc@mail.com">
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-6">
                     <div class="mb-1">
-                      <label for="companyName" class="form-label">Company Name</label>
-                    <input type="text" class="form-control" formControlName="companyName" id="companyName" placeholder="Company">
+                      <label for="organization" class="form-label">Company Name</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.organization" name="organization" id="organization" placeholder="Company">
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="mb-1">
-                      <label for="jobProfile" class="form-label">Job Profile</label>
-                    <input type="text" class="form-control" formControlName="jobProfile" id="jobProfile" placeholder="Your Job">
+                      <label for="title" class="form-label">Job Profile</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.title" name="title" id="title" placeholder="Your Job">
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="mb-1">
-                    <label for="street" class="form-label">Street</label>
-                    <input type="text" class="form-control" formControlName="street" id="street" placeholder="">
+                    <label for="workAddress.street" class="form-label">Street</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.workAddress.street" name="workAddress.street" id="workAddress.street" placeholder="">
                   </div>
                 </div>
                 <div class="row">
                   <div class="mb-1">
-                    <label for="city" class="form-label">City</label>
-                    <input type="text" class="form-control" formControlName="city" id="city" placeholder="">
+                    <label for="workAddress.city" class="form-label">City</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.workAddress.city" name="workAddress.city" id="workAddress.city" placeholder="">
                   </div>
                 </div>
                 <div class="row">
                   <div class="mb-1">
-                    <label for="state" class="form-label">State Name</label>
-                    <input type="text" class="form-control" formControlName="state" id="state" placeholder="">
+                    <label for="workAddress.stateProvince" class="form-label">State Name</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.workAddress.stateProvince" name="workAddress.stateProvince" id="workAddress.stateProvince" placeholder="">
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-6">
                     <div class="mb-1">
-                      <label for="country" class="form-label">Country</label>
-                    <input type="text" class="form-control" formControlName="country" id="country" placeholder="Country">
+                      <label for="workAddress.countryRegion" class="form-label">Country</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.workAddress.countryRegion" name="workAddress.countryRegion" id="workAddress.countryRegion" placeholder="Country">
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="mb-1">
-                      <label for="pinCode" class="form-label">Pin Code</label>
-                    <input type="number" class="form-control" min="0" formControlName="pinCode" id="pinCode" placeholder="ZIP">
+                      <label for="workAddress.postalCode" class="form-label">Pin Code</label>
+                    <input type="number" class="form-control" min="0" [(ngModel)]="vCard.workAddress.postalCode" name="workAddress.postalCode" id="workAddress.postalCode" placeholder="ZIP">
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="mb-1">
-                    <label for="webSite" class="form-label">Web Site</label>
-                    <input type="text" class="form-control" formControlName="webSite" id="webSite" placeholder="www.website.com">
+                    <label for="url" class="form-label">Web Site</label>
+                    <input type="text" class="form-control" [(ngModel)]="vCard.url" name="url" id="url" placeholder="www.website.com">
                   </div>
                 </div>
               </div>
@@ -204,10 +212,9 @@
           </div>
         </div>
         <div class="modal-footer border-btm">
-          <button type="submit" class="btn btn-success">Generate</button>
+          <button type="submit" class="btn btn-success" (click)="createQRCode()">Generate</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
-    </form>
   </div>
 </div>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ContactMasterComponent } from './contact-master.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { QRCodeModule } from 'angularx-qrcode';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DetailsComponent } from './details/details.component';
@@ -20,7 +19,6 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    QRCodeModule,
     FormsModule,
     ReactiveFormsModule,
     NgxPaginationModule,
