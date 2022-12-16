@@ -24,4 +24,9 @@ export class AppService {
     const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json'})};
     return this._http.get<any[]>(`${environment._url}/contact/${id}`, httpOptions);
   }
+
+  uploadFiles(data: any): Observable<any[]> {
+    const httpOptions = { headers: new HttpHeaders({})};
+    return this._http.post<any[]>(`${environment._url}/contact/upload`, data, httpOptions);
+  }
 }

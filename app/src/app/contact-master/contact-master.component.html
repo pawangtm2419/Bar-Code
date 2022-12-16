@@ -15,8 +15,20 @@
                               <i class="fas fa-search"></i><input class="form-control" type="search" [(ngModel)]="searchData" placeholder="Search" aria-label="Search">
                           </div>
                       </div>
-                      <div class="col-md-2 d-flex justify-content-center align-items-center"></div>
-                      <div class="col-md-5 align-self-end text-end">
+                      <div class="col-md-5 d-flex justify-content-center align-items-center">
+                        <div class="row">
+                          <div class="col-2">
+                            <button class="btn btn-secondary">Template</button>
+                          </div>
+                          <div class="col-8 px-2">
+                            <input type="file" class="form-control" (change)="onFileSelect($event.target)">
+                          </div>
+                          <div class="col-2">
+                            <button class="btn btn-secondary" type="submit" (click)="uploadResume()">Upload</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 align-self-end text-end">
                           <div class="modelBtnMain">
                             <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
                             <button type="button" class="btn btn-primary" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-download"></i></button>
@@ -212,7 +224,7 @@
           </div>
         </div>
         <div class="modal-footer border-btm">
-          <button type="submit" class="btn btn-success" (click)="createQRCode()">Generate</button>
+          <button type="submit" class="btn btn-success" (click)="createQRCode()" data-bs-dismiss="modal">Generate</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>

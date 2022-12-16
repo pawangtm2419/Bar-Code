@@ -27,6 +27,7 @@ export class ContactMasterComponent implements OnInit {
   vCard: any = vCardsJS();
   qr: any;
   closeResult: any;
+  excelFile: any;
 
   constructor( private common: AppService, private toster: ToasterService) {
     this.vCard.workAddress.label = 'Firmenanschrift';
@@ -35,6 +36,33 @@ export class ContactMasterComponent implements OnInit {
 
   ngOnInit(): void {
     this.getDataList();
+  }
+
+  onFileSelect(target: any) {
+    this.excelFile = [];
+    var files = target.files;
+    for (let i = 0; i < files.length; i++) {
+      this.excelFile.push(files[i]);
+    }
+  }
+
+  uploadResume(): void {
+    let formData: FormData = new FormData();
+    for (let i = 0; i < this.excelFile.length; i++) {
+      formData.append('images', this.excelFile[i]);
+    }
+    this.common.uploadFiles(formData).subscribe((res: any) => {
+      if(res.status) {
+        this.ngOnInit();
+        this.excelFile = [];
+        this.toster.success(res.message, "Success");
+      } else {
+        this.toster.error(res.message, "Error");
+      }
+    }),
+    (error: any) => {
+      this.toster.error("Some technical error "+error, "Error");
+    }
   }
 
   generateQr(data: any) {
@@ -68,13 +96,14 @@ export class ContactMasterComponent implements OnInit {
     if (!this.vCard) {
       return;
     }
+    var fileName = `${this.vCard.firstName} ${this.vCard.lastName}`;
     if (type === 'SVG') {
       QRCode.toString(this.vCard.getFormattedString(), { type: 'svg' }, (error: any, string: any) => {
         if (error) {
           console.error(error);
           return;
         }
-        download(string, 'vcard-qr.svg', 'image/svg+xm');
+        download(string, `${fileName}.svg`, 'image/svg+xm');
       });
     } else if (type === 'PNG') {
       QRCode.toDataURL(this.vCard.getFormattedString(), (error: any, string: any) => {
@@ -82,7 +111,7 @@ export class ContactMasterComponent implements OnInit {
           console.error(error);
           return;
         }
-        download(string, 'vcard-qr.png', 'image/png');
+        download(string, `${fileName}.png`, 'image/png');
       });
     } else if (type === 'vcf') {
       download(this.vCard.getFormattedString(), 'vcard.vcf', 'text/vcard');
@@ -90,6 +119,9 @@ export class ContactMasterComponent implements OnInit {
   }
 
   newContact(): void {
+    this.vCard = vCardsJS();
+    this.vCard.workAddress.label = 'Firmenanschrift';
+    this.vCard.version = '3.0';
     console.log(this.vCard);
   }
 
