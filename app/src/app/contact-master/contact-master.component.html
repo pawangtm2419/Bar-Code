@@ -4,7 +4,7 @@
       <div class="col-md-12">
         <ul class="model-menu">
             <li (click)="refresh()"><button class="btn badge bg-primary" title="Refresh"><i class="fas fa-sync-alt"></i></button></li> |
-            <li><a>Contact Master</a></li>
+            <li><a> QR Code generator</a></li>
         </ul>
       </div>
       <div class="col-md-12 card mt-2">
@@ -18,7 +18,7 @@
               <div class="col-md-5 d-flex justify-content-center align-items-center">
                 <div class="row">
                   <div class="col-1">
-                    <a href="../../assets/Template for upload contact.xlsx" download>
+                    <a href="../../assets/QR Code template.xlsx" download>
                       <button class="btn btn-secondary" title="Download template excel"><i class="fa fa-download"></i></button>
                     </a>
                   </div>
@@ -32,8 +32,8 @@
               </div>
               <div class="col-md-2 align-self-end text-end">
                 <div class="modelBtnMain">
-                  <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
-                  <button type="button" class="btn btn-primary" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-download"></i></button>
+                  <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-plus"></i> Add</a>&nbsp;&nbsp;
+                  <button type="button" class="btn btn-success" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-file-excel"></i></button>
                 </div>
                 <label for="limit">
                   <select id="limit" name="limit" class="form-select" (click)="dataLimit()">
@@ -50,10 +50,9 @@
                   <th scope="col">#</th>
                   <th scope="col">QR Code</th>
                   <th scope="col">Name</th>
-                  <th scope="col">email</th>
-                  <th scope="col">phone</th>
-                  <th scope="col">Action</th>
-                  <th scope="col">Delete</th>
+                  <th scope="col">EMail</th>
+                  <th scope="col">Contact Number</th>
+                  <th scope="col" class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -66,11 +65,15 @@
                   <td>{{fm.email}}</td>
                   <td>{{fm.contactnumber}}</td>
                   <td data-title="Options" class="text-center">
-                    <a class="table-btn btn btn-info" data-bs-toggle="modal" data-bs-target="#createContact" (click)="selectContact(fm, 'EDIT')"><i class="fa-solid fa-edit"></i></a>
+                    <div class="row">
+                      <div class="col-6 px-0">
+                        <a class="table-btn btn btn-info" data-bs-toggle="modal" data-bs-target="#createContact" (click)="selectContact(fm, 'EDIT')"><i class="fa-solid fa-edit"></i></a>
+                      </div>
+                      <div class="col-6 px-0">
+                        <a class="table-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete"(click)="selectContact(fm, 'DELETE')"><i class="fa-solid fa-trash"></i></a>
+                      </div>
+                    </div>
                   </td>
-                  <td data-title="Options" class="text-center">
-                    <a class="table-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete"(click)="selectContact(fm, 'DELETE')"><i class="fa-solid fa-trash"></i></a>
-                </td>
                 </tr>
               </tbody>
             </table>
@@ -123,33 +126,15 @@
       </div>
   </div>
 </div>
-
-<div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header modalHeaderCenter" style="background: #454397">
-          <h2 class="modal-title text-white text-center">Edit contact</h2>
-          <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
-        </div>
-        <div class="modal-body">
-          Edit Contact
-        </div>
-        <div class="modal-footer border-btm">
-          <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Update</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-  </div>
-</div>
 <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header modalHeaderCenter" style="background: #454397">
-          <h2 class="modal-title text-white text-center">Edit contact</h2>
+          <h2 class="modal-title text-white text-center">Delete contact</h2>
           <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
         </div>
         <div class="modal-body px-5 p-2">
-          <h4><br> Are you sure to delete?<br><br><br><br> </h4>
+          <h4><br> Are you sure you want to delete this contact?<br><br><br><br> </h4>
         </div>
         <div class="modal-footer border-btm">
           <button type="submit" class="btn btn-danger" data-bs-dismiss="modal" (click)="deleteContact()">Confirm Delete</button>
@@ -162,7 +147,7 @@
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header modalHeaderCenter" style="background: #454397">
-          <h2 class="modal-title text-white text-center">Create new contact</h2>
+          <h2 class="modal-title text-white text-center">{{editContact ? 'Update' : 'Create new'}} contact</h2>
           <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
         </div>
         <div class="modal-body">

@@ -5,6 +5,7 @@ const readXlsxFile = require('read-excel-file/node');
 const upload = async (req, next) => {
     try {
         let fileArray = req.files, tutorials = [];
+        console.log(fileArray);
         if (fileArray && fileArray.length > 0) {
             let name = `../api/uploadFile/${req.files[0].originalname}`;
             readXlsxFile(name).then((rows) => {
@@ -117,7 +118,7 @@ const updateContact = async (id, req, next) => {
     }
 };
 
-const getContactData = async (req, next) => {
+const getContactData = async (id, req, next) => {
     try {
         let sql = `SELECT * FROM contact WHERE contact_id = ${id};`;
         let result = await db.query(sql);

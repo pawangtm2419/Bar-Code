@@ -248,7 +248,7 @@ export class ContactMasterComponent implements OnInit {
 
   download(): void {
     let wb = XLSX.utils.table_to_book(document.getElementById('export'), { display: false, raw: true });
-    XLSX.writeFile(wb, "customerReport.xlsx");
+    XLSX.writeFile(wb, "Contact Data export.xlsx");
   }
 
 }
