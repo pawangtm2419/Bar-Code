@@ -25,7 +25,7 @@ function getList(req, res) {
 }
 
 function uploadData(req, res) {
-  service.uploadDataFile(req, (error, result) => {
+  service.upload(req, (error, result) => {
     return error ? res.send(error) : res.send(result);
   });
 }
