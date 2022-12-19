@@ -1,9 +1,21 @@
 const db = require("../_helpers/_db");
 const maxID = require("../_helpers/_maxid");
+const reader = require('xlsx');
 
 async  function uploadDataFile(req, next) {
     try {
-        let files = req.files;
+        let data = req.body, fileArray = req.files;
+        // let name = `../uploadFile/${files.originalname}`;
+        console.log(fileArray.length);
+        /* let file = reader.read(`../uploadFile/${files.originalname}`);
+        const sheets = file.SheetNames;
+        for(let i = 0; i < sheets.length; i++) {
+            const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[i]]);
+            temp.forEach((res) => {
+                data.push(res);
+            });
+        } */
+        console.log(data);
         return next({ status: true, message: "Contact details found!" });
     } catch (error) {
         return next({ status: false, message: "Something went wrong", error: error });

@@ -64,7 +64,7 @@ label {
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
 }
 .btn, #filter .form-control {
-  padding: 0.275rem 0.75rem;
+  padding: 0.2rem 0.5rem;
 }
 .btn-rounded {
   display: inline-block;

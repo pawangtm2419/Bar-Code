@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppService } from '../app.service';
-import { ToasterService } from '../toster.service';
 import * as XLSX from 'xlsx';
 import * as QRCode from 'qrcode';
+import { AppService, ToasterService } from '../_service';
 const vCardsJS = require('vcards-js');
 const download = require('downloadjs');
 

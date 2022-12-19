@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppService } from 'src/app/app.service';
-import { ToasterService } from '../../toster.service';
+import { ToasterService, AppService } from 'src/app/_service';
 
 @Component({
   selector: 'app-details',

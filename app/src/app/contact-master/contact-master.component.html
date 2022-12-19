@@ -1,77 +1,85 @@
 <section>
   <div class="container-fluid mt-2">
-      <div class="row">
-          <div class="col-md-12">
-              <ul class="model-menu">
-                  <li (click)="refresh()"><button class="btn badge bg-primary" title="Refresh"><i class="fas fa-sync-alt"></i></button></li> |
-                  <li><a>Contact Master</a></li>
-              </ul>
-          </div>
-          <div class="col-md-12 card mt-2">
-              <div class="sidebarMain-1">
-                  <div class="row">
-                      <div class="col-md-5">
-                          <div class="searchBar d-flex justify-content-center align-items-center">
-                              <i class="fas fa-search"></i><input class="form-control" type="search" [(ngModel)]="searchData" placeholder="Search" aria-label="Search">
-                          </div>
-                      </div>
-                      <div class="col-md-5 d-flex justify-content-center align-items-center">
-                        <div class="row">
-                          <div class="col-2">
-                            <button class="btn btn-secondary">Template</button>
-                          </div>
-                          <div class="col-8 px-2">
-                            <input type="file" class="form-control" (change)="onFileSelect($event.target)">
-                          </div>
-                          <div class="col-2">
-                            <button class="btn btn-secondary" type="submit" (click)="uploadResume()">Upload</button>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-2 align-self-end text-end">
-                          <div class="modelBtnMain">
-                            <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
-                            <button type="button" class="btn btn-primary" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-download"></i></button>
-                          </div>
-                          <label for="limit">
-                              <select id="limit" name="limit" class="form-select" (click)="dataLimit()">
-                                  <option *ngFor="let limit of limits" value="{{limit.value}}">{{limit.key}}</option>
-                              </select>
-                          </label>
-                      </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="model-menu">
+            <li (click)="refresh()"><button class="btn badge bg-primary" title="Refresh"><i class="fas fa-sync-alt"></i></button></li> |
+            <li><a>Contact Master</a></li>
+        </ul>
+      </div>
+      <div class="col-md-12 card mt-2">
+          <div class="sidebarMain-1">
+            <div class="row">
+              <div class="col-md-5">
+                  <div class="searchBar d-flex justify-content-center align-items-center">
+                      <i class="fas fa-search"></i><input class="form-control" type="search" [(ngModel)]="searchData" placeholder="Search" aria-label="Search">
                   </div>
               </div>
-              <div class="table-responsive">
-                <table class="table table-hover align-middle" id="export">
-                  <thead class="text-white sticky-top theadbg">
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">QR Code</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">email</th>
-                      <th scope="col">phone1</th>
-                      <th scope="col">response</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let fm of listData | filter: searchData | paginate: { itemsPerPage: limit, currentPage: pageData }; let i=index">
-                      <td data-title="Sr. No.">{{limit*(pageData-1)+i+1}}</td>
-                      <td data-title="Options" class="text-center">
-                          <a class="table-btn btn btn-secondary" (click)="generateQr(fm)" data-bs-toggle="modal" data-bs-target="#view"><i class="fa-solid fa-qrcode"></i></a>
-                      </td>
-                      <td>{{fm.firstname}}</td>
-                      <td>{{fm.lastname}}</td>
-                      <td>{{fm.contactnumber}}</td>
-                      <td>{{fm.email}}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="col-md-5 d-flex justify-content-center align-items-center">
+                <div class="row">
+                  <div class="col-1">
+                    <a href="../../assets/Template for upload contact.xlsx" download>
+                      <button class="btn btn-secondary" title="Download template excel"><i class="fa fa-download"></i></button>
+                    </a>
+                  </div>
+                  <div class="col-9 px-3">
+                    <input type="file" class="form-control" (change)="onFileSelect($event.target)">
+                  </div>
+                  <div class="col-2">
+                    <button class="btn btn-success" type="submit" (click)="uploadResume()">Upload</button>
+                  </div>
+                </div>
               </div>
-              <div class="input-group-icon input-group-icon-right text-center mt-2">
-                  <pagination-controls (pageChange)="pageData = $event"></pagination-controls>
+              <div class="col-md-2 align-self-end text-end">
+                <div class="modelBtnMain">
+                  <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-address-book"></i></a>&nbsp;&nbsp;
+                  <button type="button" class="btn btn-primary" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-download"></i></button>
+                </div>
+                <label for="limit">
+                  <select id="limit" name="limit" class="form-select" (click)="dataLimit()">
+                      <option *ngFor="let limit of limits" value="{{limit.value}}">{{limit.key}}</option>
+                  </select>
+                </label>
               </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle" id="export">
+              <thead class="text-white sticky-top theadbg">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">QR Code</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">email</th>
+                  <th scope="col">phone</th>
+                  <th scope="col">Action</th>
+                  <th scope="col">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let fm of listData | filter: searchData | paginate: { itemsPerPage: limit, currentPage: pageData }; let i=index">
+                  <td data-title="Sr. No.">{{limit*(pageData-1)+i+1}}</td>
+                  <td data-title="Options" class="text-center">
+                      <a class="table-btn btn btn-secondary" (click)="generateQr(fm)" data-bs-toggle="modal" data-bs-target="#view"><i class="fa-solid fa-qrcode"></i></a>
+                  </td>
+                  <td>{{fm.firstname}} {{fm.lastname}}</td>
+                  <td>{{fm.email}}</td>
+                  <td>{{fm.contactnumber}}</td>
+                  <td data-title="Options" class="text-center">
+                    <a class="table-btn btn btn-info" data-bs-toggle="modal" data-bs-target="#edit"><i class="fa-solid fa-edit"></i></a>
+                  </td>
+                  <td data-title="Options" class="text-center">
+                    <a class="table-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete"><i class="fa-solid fa-trash"></i></a>
+                </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="input-group-icon input-group-icon-right text-center mt-2">
+              <pagination-controls (pageChange)="pageData = $event"></pagination-controls>
           </div>
       </div>
+    </div>
   </div>
 </section>
 
@@ -116,6 +124,40 @@
   </div>
 </div>
 
+<div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header modalHeaderCenter" style="background: #454397">
+          <h2 class="modal-title text-white text-center">Edit contact</h2>
+          <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
+        </div>
+        <div class="modal-body">
+          Edit Contact
+        </div>
+        <div class="modal-footer border-btm">
+          <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Update</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+  </div>
+</div>
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header modalHeaderCenter" style="background: #454397">
+          <h2 class="modal-title text-white text-center">Edit contact</h2>
+          <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
+        </div>
+        <div class="modal-body">
+          Delete Contact
+        </div>
+        <div class="modal-footer border-btm">
+          <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Confirm Delete</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+  </div>
+</div>
 <div class="modal fade" id="createContact" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
