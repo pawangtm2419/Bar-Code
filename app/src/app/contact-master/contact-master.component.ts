@@ -27,6 +27,8 @@ export class ContactMasterComponent implements OnInit {
   qr: any;
   closeResult: any;
   excelFile: any;
+  deleteContactID: any;
+  editContact: boolean = false;
 
   constructor( private common: AppService, private toster: ToasterService) {
     this.vCard.workAddress.label = 'Firmenanschrift';
@@ -53,7 +55,6 @@ export class ContactMasterComponent implements OnInit {
     this.common.uploadFiles(formData).subscribe((res: any) => {
       if(res.status) {
         this.ngOnInit();
-        this.excelFile = [];
         this.toster.success(res.message, "Success");
       } else {
         this.toster.error(res.message, "Error");
@@ -149,9 +150,40 @@ export class ContactMasterComponent implements OnInit {
         match[item] = contData[item];
       }
     });
-     this.common.createContact(contData).subscribe((res: any) => {
+    if(this.editContact) {
+      this.common.updateContactData(contData, this.id).subscribe((res: any) => {
+        if(res.status) {
+          this.ngOnInit();
+          this.toster.success(res.message, "Success");
+        } else {
+          this.toster.error(res.message, "Error");
+        }
+      }),
+      (error: any) => {
+        this.toster.error(`Technical issue ${error}`, "Error");
+      };
+      this.editContact = false;
+    } else {
+      this.common.createContact(contData).subscribe((res: any) => {
+        if(res.status) {
+          this.ngOnInit();
+          this.toster.success(res.message, "Success");
+        } else {
+          this.toster.error(res.message, "Error");
+        }
+      }),
+      (error: any) => {
+        this.toster.error(`Technical issue ${error}`, "Error");
+      };
+    }
+  }
+
+  getDataList(): void {
+    this.common.getContactList().subscribe((res: any) => {
       if(res.status) {
-        this.ngOnInit();
+        this.listData = res.data;
+        this.isExcelDownload = true;
+        this.limits = [{ key: 'ALL', value: this.listData.length }];
         this.toster.success(res.message, "Success");
       } else {
         this.toster.error(res.message, "Error");
@@ -162,12 +194,36 @@ export class ContactMasterComponent implements OnInit {
     };
   }
 
-  getDataList(): void {
-    this.common.getContactList().subscribe((res: any) => {
+  selectContact(data: any, method: string): void {
+    if (method === 'EDIT') {
+      this.newContact();
+      this.id = data.contact_id;
+      this.vCard.cellPhone = data.phonenumber;
+      this.vCard.firstName = data.firstname;
+      this.vCard.lastName = data.lastname;
+      this.vCard.workPhone = data.phonenumber;
+      this.vCard.organization = data.companyname;
+      this.vCard.title = data.jobprofile;
+      this.vCard.url = data.website;
+      this.vCard.workAddress.street = data.street;
+      this.vCard.workAddress.city = data.city;
+      this.vCard.workAddress.stateProvince = data.state;
+      this.vCard.workAddress.postalCode = data.pincode;
+      this.vCard.workAddress.countryRegion = data.country;
+      this.vCard.workEmail = data.email;
+      this.vCard.workFax = data.faxnumber;
+      this.vCard.workPhone = data.contactnumber;
+      console.log(this.vCard);
+      this.editContact = true;
+    } else {
+      this.deleteContactID = data.contact_id;
+    }
+  }
+
+  deleteContact(): void {
+    this.common.deleteContactData(this.deleteContactID).subscribe((res: any) => {
       if(res.status) {
-        this.listData = res.data;
-        this.isExcelDownload = true;
-        this.limits = [{ key: 'ALL', value: this.listData.length }];
+        this.ngOnInit();
         this.toster.success(res.message, "Success");
       } else {
         this.toster.error(res.message, "Error");

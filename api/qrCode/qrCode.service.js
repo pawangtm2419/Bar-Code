@@ -64,9 +64,54 @@ const upload = async (req, next) => {
   
 const getContactList = async (req, next) => {
     try {
-        let sql = `SELECT * FROM contact;`;
+        let sql = `SELECT * FROM contact where status = true;`;
         let result = await db.query(sql);
-        return (result.rowCount > 0) ? next({ status: true, message: "Contact details found!", data: result.rows }) : next({ status: true, message: "Data not found!" });
+        return (result.rowCount > 0) ? next({ status: true, message: "Contact details found!", data: result.rows }) : next({ status: false, message: "Data not found!" });
+    } catch (error) {
+        return next({ status: false, message: "Something went wrong", error: error });
+    }
+};
+
+const deleteContact = async (id, req, next) => {
+    try {
+        let sql = `UPDATE contact SET status = ${false} WHERE contact_id = ${id};`;
+        let result = await db.query(sql);
+        return (result.rowCount > 0) ? next({ status: true, message: "Contact deleted successfully!" }) : next({ status: false, message: "Data not found!" });
+    } catch (error) {
+        return next({ status: false, message: "Something went wrong", error: error });
+    }
+};
+
+const updateContact = async (id, req, next) => {
+    try {
+        let body = req.body;
+        let keys = Object.keys(body);
+        var i = {};
+        keys.forEach(element => {
+            if(body[element]) {
+                i[element] = body[element];
+            }
+        });
+        keys = Object.keys(i);
+        keys = keys.map(item => item.toLowerCase());
+        var match = 'SET';
+        var count = 0;
+        keys.forEach(async item => {
+            if(isNaN(body[item])) {
+                match += ` ${item} = '${body[item]}'`;
+            } else {
+                match += ` ${item} = ${body[item]}`;
+            }
+            count++;
+            if(keys.length != count) {
+                match += ',';
+            }
+        });
+        let sql = `UPDATE contact ${match} WHERE contact_id = ${id};`;
+        console.log(sql);
+        let result = await db.query(sql);
+        console.log(result.rowCount);
+        return (result.rowCount > 0) ? next({ status: true, message: "Contact saved!" }) : next({ status: false, message: "Contact does not save!" });
     } catch (error) {
         return next({ status: false, message: "Something went wrong", error: error });
     }
@@ -76,7 +121,7 @@ const getContactData = async (req, next) => {
     try {
         let sql = `SELECT * FROM contact WHERE contact_id = ${id};`;
         let result = await db.query(sql);
-        return (result.rowCount > 0) ? next({ status: true, message: "Contact details found!", data: result.rows }) : next({ status: true, message: "Data not found!" });
+        return (result.rowCount > 0) ? next({ status: true, message: "Contact details found!", data: result.rows }) : next({ status: false, message: "Data not found!" });
     } catch (error) {
         return next({ status: false, message: "Something went wrong", error: error });
     }
@@ -112,4 +157,4 @@ const createContactData = async (req, next) => {
     }
 };
 
-module.exports = { getContactData, createContactData, getContactList, upload };
+module.exports = { getContactData, createContactData, getContactList, upload, deleteContact, updateContact };

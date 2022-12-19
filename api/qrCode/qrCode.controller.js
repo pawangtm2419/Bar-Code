@@ -16,10 +16,24 @@ var upload = multer({ storage: storage });
 router.get('', getList);
 router.get('/:id', getData);
 router.post("/create", createData);
+router.get("/delete/:id", deleteData);
+router.post("/update/:id", updateData);
 router.post("/upload", upload.array('images'), uploadData);
 
 function getList(req, res) {
   service.getContactList(req, (error, result) => {
+    return error ? res.send(error) : res.send(result);
+  });
+}
+
+function deleteData(req, res) {
+  service.deleteContact(req.params.id, req, (error, result) => {
+    return error ? res.send(error) : res.send(result);
+  });
+}
+
+function updateData(req, res) {
+  service.updateContact(req.params.id, req, (error, result) => {
     return error ? res.send(error) : res.send(result);
   });
 }

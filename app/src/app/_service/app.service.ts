@@ -25,6 +25,16 @@ export class AppService {
     return this._http.get<any[]>(`${environment._url}/contact/${id}`, httpOptions);
   }
 
+  deleteContactData(id: number): Observable<any[]> {
+    const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json'})};
+    return this._http.get<any[]>(`${environment._url}/contact/delete/${id}`, httpOptions);
+  }
+
+  updateContactData(data: any, id: number): Observable<any[]> {
+    const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json'})};
+    return this._http.post<any[]>(`${environment._url}/contact/update/${id}`, data, httpOptions);
+  }
+
   uploadFiles(data: any): Observable<any[]> {
     const httpOptions = { headers: new HttpHeaders({})};
     return this._http.post<any[]>(`${environment._url}/contact/upload`, data, httpOptions);
