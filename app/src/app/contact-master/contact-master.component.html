@@ -33,7 +33,7 @@
               <div class="col-md-2 align-self-end text-end">
                 <div class="modelBtnMain">
                   <a class="table-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createContact" (click)="newContact()"><i class="fa-solid fa-plus"></i> Add</a>&nbsp;&nbsp;
-                  <button type="button" class="btn btn-success" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa fa-file-excel"></i></button>
+                  <button type="button" class="btn btn-success" *ngIf="isExcelDownload" (click)="download()" title="Download selected records"><i class="fa-sharp fa-solid fa-file-excel"></i></button>
                 </div>
                 <label for="limit">
                   <select id="limit" name="limit" class="form-select" (click)="dataLimit()">
@@ -52,6 +52,8 @@
                   <th scope="col">Name</th>
                   <th scope="col">EMail</th>
                   <th scope="col">Contact Number</th>
+                  <th scope="col">Profile</th>
+                  <th scope="col">Company Name</th>
                   <th scope="col" class="text-center">Action</th>
                 </tr>
               </thead>
@@ -64,6 +66,8 @@
                   <td>{{fm.firstname}} {{fm.lastname}}</td>
                   <td>{{fm.email}}</td>
                   <td>{{fm.contactnumber}}</td>
+                  <td>{{fm.jobprofile}}</td>
+                  <td>{{fm.companyname}}</td>
                   <td data-title="Options" class="text-center">
                     <div class="row">
                       <div class="col-6 px-0">
@@ -85,39 +89,32 @@
     </div>
   </div>
 </section>
-
 <div class="modal fade" id="view" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-          <div class="modal-header modalHeaderCenter" style="background: #454397">
-              <h2 class="modal-title text-white text-center">Detail</h2>
+          <div class="modal-header modalHeaderCenter" style="background: #454397;padding: 5px 0;">
+              <h2 class="modal-title text-white text-center">Contact QR Code</h2>
               <a class="btn-close2" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></a>
           </div>
           <div class="modal-body">
-              <div class="row">
-                  <div class="col-md-1"></div>
-                  <div class="col-md-10">
-                    <div class="row">
-                      <div class="col-md-3 pt-3">
-                        <label for="qrCodeSize" class="form-label">Image size:</label> &nbsp;&nbsp;&nbsp;
-                        <input type="range" id="qrCodeSize" min="200" max="500" step="10" (input)="qrSize($event.target)" [value]="qrCodeSize">
-                      </div>
-                      <div class="col-md-3 p-2">
-                        <button type="button" class="btn btn-primary" (click)="downloadQRCode('SVG')">Download (SVG)</button>
-                      </div>
-                      <div class="col-md-3 p-2">
-                        <button type="button" class="btn btn-primary" (click)="downloadQRCode('PNG')">Download (PNG)</button>
-                      </div>
-                      <div class="col-md-3 p-2">
-                        <button type="button" class="btn btn-primary" (click)="downloadQRCode('vcf')">Download (VCF)</button>
-                      </div>
-                    </div><hr>
-                    <div class="d-flex justify-content-center">
-                      <canvas id="qrCanvas"></canvas>
-                    </div>
-                  </div>
-                  <div class="col-md-1"></div>
+            <div class="row">
+              <div class="col-md-6 pt-3">
+                <label for="qrCodeSize" class="form-label">Image size:</label> &nbsp;
+                <input type="range" id="qrCodeSize" min="300" max="500" step="10" (input)="qrSize($event.target)" [value]="qrCodeSize">
               </div>
+              <div class="col-md-2 p-2">
+                  <button type="button" class="btn btn-primary" (click)="downloadQRCode('PNG')">PNG</button>
+              </div>
+              <div class="col-md-2 p-2">
+                  <button type="button" class="btn btn-primary" (click)="downloadQRCode('SVG')">SVG</button>
+              </div>
+              <div class="col-md-2 p-2">
+                  <button type="button" class="btn btn-primary" (click)="downloadQRCode('vcf')">VCF</button>
+              </div>
+            </div><hr style="margin: 0;">
+            <div class="d-flex justify-content-center">
+              <img src="{{imageURL}}" [width]="qrCodeSize">
+            </div>
           </div>
           <div class="modal-footer border-btm">
             <button type="button" class="btn btn-primary" [routerLink]="['/contact-master', id]"  data-bs-dismiss="modal">View detail</button>

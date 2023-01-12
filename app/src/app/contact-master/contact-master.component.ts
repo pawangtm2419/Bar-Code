@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as QRCode from 'qrcode';
 import { AppService, ToasterService } from '../_service';
@@ -13,22 +11,19 @@ const download = require('downloadjs');
   styleUrls: ['./contact-master.component.css']
 })
 export class ContactMasterComponent implements OnInit {
-  qrCodeSize: number = 350;
-  stringData: any;
-  qrData: any;
+  qrCodeSize: number = 400;
   listData: any;
   searchData: any;
   pageData = 1;
-  limits = [{ key: '50', value: 50 }, { key: '100', value: 100 }, { key: '250', value: 250 }, { key: '500', value: 500 }];
+  limits = [{ key: '10', value: 10 }, { key: '50', value: 50 }, { key: '100', value: 100 }, { key: '250', value: 250 }, { key: '500', value: 500 }];
   limit: any = 50;
   isExcelDownload: boolean = false;
   id: any;
   vCard: any = vCardsJS();
-  qr: any;
-  closeResult: any;
   excelFile: any;
   deleteContactID: any;
   editContact: boolean = false;
+  imageURL: any;
 
   constructor( private common: AppService, private toster: ToasterService) {
     this.vCard.workAddress.label = 'Firmenanschrift';
@@ -66,7 +61,6 @@ export class ContactMasterComponent implements OnInit {
   }
 
   generateQr(data: any) {
-    console.log(this.vCard);
     this.id = data.contact_id;
     this.vCard.cellPhone = data.phonenumber;
     this.vCard.firstName = data.firstname;
@@ -83,13 +77,23 @@ export class ContactMasterComponent implements OnInit {
     this.vCard.workEmail = data.email;
     this.vCard.workFax = data.faxnumber;
     this.vCard.workPhone = data.contactnumber;
-    QRCode.toCanvas(
-      document.getElementById('qrCanvas'),
-      this.vCard.getFormattedString(),
-      function (error: any) {
-        if (error) console.error(error);
+    var opts = {
+      errorCorrectionLevel: 'H',
+      type: 'image/jpeg',
+      quality: 0.3,
+      margin: 1,
+      color: {
+        dark:"#010599FF",
+        light:"#FFBF60FF"
       }
-    );
+    }
+    QRCode.toDataURL(this.vCard.getFormattedString()).then((url: any) => {
+      this.imageURL = url;
+    }).catch((err: any) => {
+      console.log(err);
+      this.toster.warning("Please select contact", "Warning");
+    });
+
   }
 
   downloadQRCode(type: any) {
@@ -114,7 +118,7 @@ export class ContactMasterComponent implements OnInit {
         download(string, `${fileName}.png`, 'image/png');
       });
     } else if (type === 'vcf') {
-      download(this.vCard.getFormattedString(), 'vcard.vcf', 'text/vcard');
+      download(this.vCard.getFormattedString(), `${fileName}.vcf`, 'text/vcard');
     }
   }
 
@@ -183,7 +187,7 @@ export class ContactMasterComponent implements OnInit {
       if(res.status) {
         this.listData = res.data;
         this.isExcelDownload = true;
-        this.limits = [{ key: 'ALL', value: this.listData.length }];
+        this.limits.push({ key: 'ALL', value: this.listData.length });
         this.toster.success(res.message, "Success");
       } else {
         this.toster.error(res.message, "Error");
