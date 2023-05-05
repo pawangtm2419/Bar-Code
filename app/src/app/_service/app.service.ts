@@ -20,6 +20,11 @@ export class AppService {
     return this._http.get<any[]>(`${environment._url}/contact`, httpOptions);
   }
 
+  countryCode(): Observable<any[]> {
+    const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json'})};
+    return this._http.get<any[]>(`../../assets/CountryCodes.json`, httpOptions);
+  }
+
   getContactDetails(id: number): Observable<any[]> {
     const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json'})};
     return this._http.get<any[]>(`${environment._url}/contact/${id}`, httpOptions);

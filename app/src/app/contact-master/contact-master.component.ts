@@ -10,6 +10,7 @@ const download = require('downloadjs');
   templateUrl: './contact-master.component.html',
   styleUrls: ['./contact-master.component.css']
 })
+
 export class ContactMasterComponent implements OnInit {
   qrCodeSize: number = 400;
   listData: any;
@@ -24,6 +25,7 @@ export class ContactMasterComponent implements OnInit {
   deleteContactID: any;
   editContact: boolean = false;
   imageURL: any;
+  countryCode: any;
 
   constructor( private common: AppService, private toster: ToasterService) {
     this.vCard.workAddress.label = 'Firmenanschrift';
@@ -32,6 +34,7 @@ export class ContactMasterComponent implements OnInit {
 
   ngOnInit(): void {
     this.getDataList();
+    this.getCountryCode();
   }
 
   onFileSelect(target: any) {
@@ -39,6 +42,15 @@ export class ContactMasterComponent implements OnInit {
     var files = target.files;
     for (let i = 0; i < files.length; i++) {
       this.excelFile.push(files[i]);
+    }
+  }
+
+  getCountryCode(): void {
+    this.common.countryCode().subscribe((res: any) => {
+      this.countryCode = res;
+    }),
+    (error: any) => {
+      this.toster.error("Some technical error "+error, "Error");
     }
   }
 
@@ -76,7 +88,7 @@ export class ContactMasterComponent implements OnInit {
     this.vCard.workAddress.countryRegion = data.country;
     this.vCard.workEmail = data.email;
     this.vCard.workFax = data.faxnumber;
-    this.vCard.workPhone = data.contactnumber;
+    this.vCard.workPhone = `${data.countrycode ? '+'+data.countrycode : ''}${data.contactnumber}`;
     var opts = {
       errorCorrectionLevel: 'H',
       type: 'image/jpeg',
@@ -145,7 +157,8 @@ export class ContactMasterComponent implements OnInit {
       website: (this.vCard.url) ? this.vCard.url : '',
       email :  (this.vCard.workEmail) ? this.vCard.workEmail : '',
       faxnumber :  (this.vCard.workFax) ? this.vCard.workFax : '',
-      contactnumber :  (this.vCard.workPhone) ? this.vCard.workPhone : ''
+      contactnumber :  (this.vCard.workPhone) ? this.vCard.workPhone : '',
+      countrycode :  (this.vCard.note) ? this.vCard.note : ''
     }
     let keys = Object.keys(contData);
     let match: any = {};

@@ -65,7 +65,7 @@
                   </td>
                   <td>{{fm.firstname}} {{fm.lastname}}</td>
                   <td>{{fm.email}}</td>
-                  <td>{{fm.contactnumber}}</td>
+                  <td><span *ngIf="fm.countrycode">+</span>{{fm.countrycode}}<span *ngIf="fm.countrycode">-</span>{{fm.contactnumber}}</td>
                   <td>{{fm.jobprofile}}</td>
                   <td>{{fm.companyname}}</td>
                   <td data-title="Options" class="text-center">
@@ -166,8 +166,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="mb-1">
+                <div class="row mb-1">
+                  <div class="col-2">
+                    <label for="contactCountryCode" class="form-label">Prefix</label>
+                    <select class="form-select" [(ngModel)]="vCard.note">
+                      <option *ngFor="let code of countryCode" [value]="code.dial_code">{{code.name}} ({{code.dial_code}})</option>
+                    </select>
+                  </div>
+                  <div class="col-10">
                     <label for="workPhone" class="form-label">Contact Number</label>
                     <input type="number" class="form-control" min="0" [(ngModel)]="vCard.workPhone" name="workPhone" id="workPhone" placeholder="Contact">
                   </div>
